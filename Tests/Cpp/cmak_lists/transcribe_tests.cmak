@@ -1,0 +1,115 @@
+cmake_minimum_required(VERSION 3.10)
+project(arabicwhisper_transcribe_tests)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Include directories
+set(CTRANSLATE2_ROOT "/Users/amraboelela/develop/android/CTranslate2")
+include_directories(${CTRANSLATE2_ROOT}/include)
+include_directories(../../../Sources/faster_whisper/include)
+include_directories(../../../Sources/faster_whisper/whisper)
+include_directories(../../../Sources/faster_whisper/CTranslate2Headers)
+
+# Find required packages
+find_package(ZLIB REQUIRED)
+
+# Find CTranslate2 library (try multiple possible locations)
+# Platform-specific library search
+if(APPLE)
+  # macOS: look for .dylib and .a files
+  find_library(CTRANSLATE2_LIB
+    NAMES ctranslate2 libctranslate2.dylib libctranslate2.a
+    PATHS
+      ${CTRANSLATE2_ROOT}/lib
+      ${CTRANSLATE2_ROOT}/build/lib
+      ${CTRANSLATE2_ROOT}/build-macos
+      /usr/local/lib
+      /opt/homebrew/lib
+    NO_DEFAULT_PATH
+  )
+elseif(UNIX AND NOT APPLE)
+  # Linux: look for .so files
+  find_library(CTRANSLATE2_LIB
+    NAMES ctranslate2 libctranslate2.so
+    PATHS
+      ${CTRANSLATE2_ROOT}/lib
+      ${CTRANSLATE2_ROOT}/build/lib
+      ${CTRANSLATE2_ROOT}/build-linux
+    NO_DEFAULT_PATH
+  )
+else()
+  # Android or other platforms
+  find_library(CTRANSLATE2_LIB
+    NAMES ctranslate2 libctranslate2.so
+    PATHS
+      ${CTRANSLATE2_ROOT}/lib
+      ${CTRANSLATE2_ROOT}/build/lib
+      ${CTRANSLATE2_ROOT}/build-android-arm64
+    NO_DEFAULT_PATH
+  )
+endif()
+
+# Set up source files - conditional compilation based on CTranslate2 availability
+set(TRANSCRIBE_SOURCES
+    ../transcribe_tests.cpp
+    ../../../Sources/faster_whisper/feature_extractor.cpp
+    ../../../Sources/faster_whisper/audio.cpp
+    ../../../Sources/faster_whisper/tokenizer.cpp
+    ../../../Sources/faster_whisper/utils.cpp
+    ../../../Sources/faster_whisper/whisper/whisper_audio.cpp
+    ../../../Sources/faster_whisper/whisper/whisper_tokenizer.cpp
+)
+
+# Only include transcribe.cpp if CTranslate2 is available
+if(CTRANSLATE2_LIB)
+    list(APPEND TRANSCRIBE_SOURCES ../../../Sources/faster_whisper/transcribe.cpp)
+endif()
+
+# Create test executable for transcribe() tests
+add_executable(test_transcribe ${TRANSCRIBE_SOURCES})
+
+# Link libraries for test
+target_link_libraries(
+    test_transcribe
+    ${ZLIB_LIBRARIES}
+    m  # math library
+)
+
+# Configure CTranslate2 linking
+if(CTRANSLATE2_LIB)
+    message(STATUS "Found CTranslate2: ${CTRANSLATE2_LIB}")
+    target_link_libraries(test_transcribe ${CTRANSLATE2_LIB})
+    target_compile_definitions(test_transcribe PRIVATE HAVE_CTRANSLATE2)
+
+    # Add additional libraries that CTranslate2 might need
+    find_library(ACCELERATE_FRAMEWORK Accelerate)
+    if(ACCELERATE_FRAMEWORK)
+        target_link_libraries(test_transcribe ${ACCELERATE_FRAMEWORK})
+    endif()
+
+    # Add pthread if needed
+    find_package(Threads REQUIRED)
+    target_link_libraries(test_transcribe Threads::Threads)
+
+else()
+    message(WARNING "CTranslate2 library not found! Running tests without CTranslate2 support.")
+    message(STATUS "Tests will run with limited functionality (no full transcription tests)")
+    target_compile_definitions(test_transcribe PRIVATE NO_CTRANSLATE2)
+endif()
+
+# Enable testing
+enable_testing()
+
+# Add the test
+add_test(NAME transcribe_test COMMAND test_transcribe)
+
+# Print instructions
+message(STATUS "To run transcribe() tests:")
+message(STATUS "  mkdir build && cd build")
+message(STATUS "  cp ../transcribe_tests.cmak ./CMakeLists.txt")
+message(STATUS "  cmake .")
+message(STATUS "  make")
+message(STATUS "  ./test_transcribe")
+message(STATUS "  OR: make test")

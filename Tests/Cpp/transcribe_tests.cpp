@@ -1,7 +1,7 @@
-#include "whisper/transcribe.h"
-#include "whisper/whisper_audio.h"
+#include "transcribe.h"
+#include "audio.h"
 #include "feature_extractor.h"
-#include "whisper/whisper_tokenizer.h"
+#include "tokenizer.h"
 #include <iostream>
 #include <vector>
 #include <cassert>

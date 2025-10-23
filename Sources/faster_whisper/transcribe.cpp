@@ -1,7 +1,7 @@
 
 #include "transcribe.h"
 #include "utils.h"
-#include "whisper/whisper_tokenizer.h"
+#include "whisper_tokenizer.h"
 #include <ctranslate2/models/whisper.h>
 #include <ctranslate2/storage_view.h>
 #include <string>
@@ -58,7 +58,7 @@ std::vector<std::vector<float>> pad_or_trim(const std::vector<std::vector<float>
 #include <variant>
 #include <utility>
 #include <chrono>
-#include "whisper/whisper_audio.h"
+#include "audio.h"
 #include "feature_extractor.h"
 #ifdef ANDROID
 #include <android/log.h>

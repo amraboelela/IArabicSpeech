@@ -1,5 +1,5 @@
 #include "audio.h"
-#include "whisper/whisper_audio.h"
+#include "whisper_audio.h"
 
 #include <iostream>
 #include <stdexcept>
