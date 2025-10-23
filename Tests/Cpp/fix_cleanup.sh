@@ -6,7 +6,7 @@
 echo "🧹 Cleaning up test artifacts..."
 
 # Remove any lingering test build directories
-for dir in build *_build utils_build audio_build; do
+for dir in build *_build utils_build build; do
     if [ -d "$dir" ]; then
         echo "  Removing $dir..."
         rm -rf "$dir"

@@ -1,4 +1,4 @@
-#include "whisper/whisper_tokenizer.h"
+#include "whisper_tokenizer.h"
 #include "tokenizer.h"
 #include <iostream>
 #include <vector>

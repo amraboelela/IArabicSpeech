@@ -22,11 +22,11 @@ echo "=== Building and Running Audio Processing Unit Tests ==="
 cd "$(dirname "$0")"
 
 # Create build directory
-if [ ! -d "audio_build" ]; then
-    mkdir audio_build
+if [ ! -d "build" ]; then
+    mkdir build
 fi
 
-cd audio_build
+cd build
 
 echo "Configuring build with CMake..."
 # Copy the test CMakeLists to be the main one for this build
@@ -49,6 +49,6 @@ echo "Running with CTest for detailed results..."
 make test
 
 cd ..
-rm -rf audio_build
+rm -rf build
 
 echo "Done!"
