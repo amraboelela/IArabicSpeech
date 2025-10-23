@@ -18,7 +18,7 @@
 #ifndef NO_CTRANSLATE2
 #include <ctranslate2/vocabulary.h>
 #endif
-#include "whisper/whisper_tokenizer.h"  // Include complete definition of TokenizerWrapper
+#include "whisper_tokenizer.h"  // Include complete definition of TokenizerWrapper
 
 // Forward declaration of the mock tokenizers::Tokenizer class
 namespace tokenizers {

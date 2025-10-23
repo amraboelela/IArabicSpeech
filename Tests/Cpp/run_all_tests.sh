@@ -77,7 +77,7 @@ test_scripts=(
     "feature_extractor_tests.sh"
     "whisper_audio_tests.sh"
     "whisper_tokenizer_tests.sh"
-    "whisper_model_tests.sh"
+    "transcribe_tests.sh"
 )
 
 # Track test results
