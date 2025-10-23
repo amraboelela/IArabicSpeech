@@ -1,0 +1,5 @@
+module faster_whisper {
+    umbrella header "IArabicSpeech-Bridging.h"
+    export *
+    module * { export * }
+}
