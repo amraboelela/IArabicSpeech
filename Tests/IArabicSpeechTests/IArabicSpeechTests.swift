@@ -6,6 +6,7 @@
 ///
 
 import Testing
+import Foundation
 @testable import IArabicSpeech
 
 @Suite("Arabic Speech Recognition Tests")
@@ -123,16 +124,19 @@ struct IArabicSpeechTests {
         // Test that model is not loaded initially
         #expect(!recognizer.hasModelLoaded, "Model should not be loaded initially")
 
-        // Note: This test requires a real model to be downloaded
-        let modelPath = "~/whisper-models/base"
-        let expandedPath = NSString(string: modelPath).expandingTildeInPath
+        // Use bundled model resource
+        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+            throw XCTSkip("Model resource not found in bundle")
+        }
+
+        print("Model path: \(modelPath)")
 
         do {
-            try recognizer.loadModel(path: expandedPath)
+            try recognizer.loadModel(path: modelPath)
             #expect(recognizer.hasModelLoaded, "Model should be loaded after loadModel()")
-            print("✓ Model loaded successfully from \(expandedPath)")
+            print("✓ Model loaded successfully from \(modelPath)")
         } catch SpeechRecognitionError.modelLoadFailed {
-            print("⚠ Model loading failed - ensure model exists at \(expandedPath)")
+            print("⚠ Model loading failed - ensure model exists at \(modelPath)")
             throw XCTSkip("Model not available at expected path")
         } catch {
             Issue.record("Unexpected error loading model: \(error)")
@@ -145,11 +149,9 @@ struct IArabicSpeechTests {
 
         let recognizer = ArabicSpeechRecognizer()
 
-        // Load model (skip if not available)
-        let modelPath = NSString(string: "~/whisper-models/base").expandingTildeInPath
-
-        guard FileManager.default.fileExists(atPath: modelPath) else {
-            throw XCTSkip("Model not available for testing")
+        // Use bundled model resource
+        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+            throw XCTSkip("Model resource not found in bundle")
         }
 
         try recognizer.loadModel(path: modelPath)
@@ -187,9 +189,8 @@ struct IArabicSpeechTests {
 
         let recognizer = ArabicSpeechRecognizer()
 
-        let modelPath = NSString(string: "~/whisper-models/base").expandingTildeInPath
-        guard FileManager.default.fileExists(atPath: modelPath) else {
-            throw XCTSkip("Model not available")
+        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+            throw XCTSkip("Model resource not found in bundle")
         }
 
         try recognizer.loadModel(path: modelPath)
@@ -214,9 +215,8 @@ struct IArabicSpeechTests {
 
         let recognizer = ArabicSpeechRecognizer()
 
-        let modelPath = NSString(string: "~/whisper-models/base").expandingTildeInPath
-        guard FileManager.default.fileExists(atPath: modelPath) else {
-            throw XCTSkip("Model not available")
+        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+            throw XCTSkip("Model resource not found in bundle")
         }
 
         try recognizer.loadModel(path: modelPath)

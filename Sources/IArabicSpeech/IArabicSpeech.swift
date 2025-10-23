@@ -91,6 +91,40 @@ public class ArabicSpeechRecognizer {
         modelHandle = nil
     }
 
+    /// Get the path to the bundled Whisper model
+    /// - Returns: Path to the whisper_ct2 model directory, or nil if not found
+    public static func bundledModelPath() -> String? {
+        // The model is bundled with the faster_whisper module inside model/whisper_ct2
+        // Try to locate it in the build/test bundle structure
+
+        // Get the path to the current executable/test bundle
+        let currentBundle = Bundle.main
+        let bundleURL = currentBundle.bundleURL
+
+        // Common locations where SPM places module resources
+        let possibleLocations = [
+            // Direct in bundle
+            bundleURL.appendingPathComponent("model/whisper_ct2"),
+            // In Resources subdirectory
+            bundleURL.appendingPathComponent("Contents/Resources/model/whisper_ct2"),
+            bundleURL.appendingPathComponent("Resources/model/whisper_ct2"),
+            // In module-specific bundle (SPM creates these for resources)
+            bundleURL.deletingLastPathComponent().appendingPathComponent("faster_whisper_faster_whisper.bundle/Contents/Resources/model/whisper_ct2"),
+            bundleURL.deletingLastPathComponent().appendingPathComponent("faster_whisper.bundle/Contents/Resources/model/whisper_ct2"),
+            // Build directory structure
+            bundleURL.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("faster_whisper_faster_whisper.bundle/Contents/Resources/model/whisper_ct2"),
+        ]
+
+        for location in possibleLocations {
+            let path = location.path
+            if FileManager.default.fileExists(atPath: path) {
+                return path
+            }
+        }
+
+        return nil
+    }
+
     deinit {
         // Clean up model if loaded
         if let handle = modelHandle {

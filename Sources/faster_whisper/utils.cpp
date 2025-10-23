@@ -1,11 +1,3 @@
-///
-/// utils.cpp
-/// IArabicSpeech
-///
-/// Created by Amr Aboelela on 10/21/2025.
-///
-
-#include "utils.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -16,11 +8,15 @@
 #include <optional>
 
 // Fictional wrapper for a C++ HTTP client library (e.g., cURL or Boost.Beast)
-// Implementation
-void CurlWrapper::downloadFile(const std::string& url, const std::string& outputPath) {
-  // Implement file download logic here
-  std::cout << "Downloading from " << url << " to " << outputPath << std::endl;
-}
+// In a real application, this would contain the logic to make HTTP requests
+// and handle file downloads, authentication, and progress bars.
+class CurlWrapper {
+public:
+  static void downloadFile(const std::string& url, const std::string& outputPath) {
+    // Implement file download logic here
+    std::cout << "Downloading from " << url << " to " << outputPath << std::endl;
+  }
+};
 
 // This map mirrors the Python dictionary to provide a lookup for model IDs.
 static const std::unordered_map<std::string, std::string> _MODELS = {
@@ -62,11 +58,11 @@ std::vector<std::string> availableModels() {
 // C++ equivalent of `download_model()`.
 std::string downloadModel(
     const std::string& sizeOrId,
-    const std::optional<std::string>& outputDir,
-    bool localFilesOnly,
-    const std::optional<std::string>& cacheDir,
-    const std::optional<std::string>& revision,
-    const std::optional<std::string>& useAuthToken) {
+    const std::optional<std::string>& outputDir = std::nullopt,
+    bool localFilesOnly = false,
+    const std::optional<std::string>& cacheDir = std::nullopt,
+    const std::optional<std::string>& revision = std::nullopt,
+    const std::optional<std::string>& useAuthToken = std::nullopt) {
 
   std::string repoId;
   if (sizeOrId.find('/') != std::string::npos) {
@@ -116,8 +112,8 @@ std::string downloadModel(
 // C++ equivalent of `format_timestamp()`.
 std::string formatTimestamp(
     double seconds,
-    bool alwaysIncludeHours,
-    const std::string& decimalMarker) {
+    bool alwaysIncludeHours = false,
+    const std::string& decimalMarker = ".") {
 
   if (seconds < 0) {
     throw std::invalid_argument("non-negative timestamp expected");

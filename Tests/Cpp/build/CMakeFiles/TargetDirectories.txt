@@ -1,6 +1,0 @@
-/Users/amraboelela/develop/swift/IArabicSpeech/Tests/Cpp/build/CMakeFiles/feature_extractor_tests.dir
-/Users/amraboelela/develop/swift/IArabicSpeech/Tests/Cpp/build/CMakeFiles/whisper_audio_tests.dir
-/Users/amraboelela/develop/swift/IArabicSpeech/Tests/Cpp/build/CMakeFiles/whisper_tokenizer_tests.dir
-/Users/amraboelela/develop/swift/IArabicSpeech/Tests/Cpp/build/CMakeFiles/test.dir
-/Users/amraboelela/develop/swift/IArabicSpeech/Tests/Cpp/build/CMakeFiles/edit_cache.dir
-/Users/amraboelela/develop/swift/IArabicSpeech/Tests/Cpp/build/CMakeFiles/rebuild_cache.dir

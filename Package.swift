@@ -25,16 +25,13 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
 
-        // Embedded CTranslate2 binary framework
-        .binaryTarget(
-            name: "CTranslate2",
-            path: "CTranslate2.xcframework"
-        ),
-
         // C/C++ target for Faster Whisper
         .target(
             name: "faster_whisper",
             dependencies: ["CTranslate2"],
+            resources: [
+                .copy("model")
+            ],
             cSettings: [
                 .headerSearchPath("."),
                 .headerSearchPath("whisper"),
@@ -59,6 +56,12 @@ let package = Package(
             dependencies: ["faster_whisper"]
         ),
 
+        // Embedded CTranslate2 binary framework
+        .binaryTarget(
+            name: "CTranslate2",
+            path: "CTranslate2.xcframework"
+        ),
+        
         .testTarget(
             name: "IArabicSpeechTests",
             dependencies: ["IArabicSpeech"]),

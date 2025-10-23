@@ -27,10 +27,13 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_SOURCE_DIR}/../../CTranslate2.xcframework/macos
 
 # Source files from faster_whisper
 set(IARABICSPEECH_SOURCES
+    ../../Sources/faster_whisper/audio.cpp
     ../../Sources/faster_whisper/feature_extractor.cpp
+    ../../Sources/faster_whisper/tokenizer.cpp
+    ../../Sources/faster_whisper/transcribe.cpp
+    ../../Sources/faster_whisper/utils.cpp
     ../../Sources/faster_whisper/whisper/whisper_audio.cpp
     ../../Sources/faster_whisper/whisper/whisper_tokenizer.cpp
-    ../../Sources/faster_whisper/tokenizer.cpp
 )
 
 # Test executables
@@ -65,9 +68,41 @@ target_link_libraries(whisper_tokenizer_tests
     c++
 )
 
+# Audio Tests (new)
+add_executable(audio_tests
+    audio_tests.cpp
+    ${IARABICSPEECH_SOURCES}
+)
+target_link_libraries(audio_tests
+    z
+    c++
+)
+
+# Transcribe Tests (new)
+add_executable(transcribe_tests
+    transcribe_tests.cpp
+    ${IARABICSPEECH_SOURCES}
+)
+target_link_libraries(transcribe_tests
+    z
+    c++
+)
+
+# Utils Tests (new) - doesn't need utils.cpp as it has mock implementations
+add_executable(utils_tests
+    utils_tests.cpp
+)
+target_link_libraries(utils_tests
+    z
+    c++
+)
+
 # Enable testing
 enable_testing()
 
 add_test(NAME FeatureExtractorTests COMMAND feature_extractor_tests)
 add_test(NAME AudioTests COMMAND whisper_audio_tests)
 add_test(NAME TokenizerTests COMMAND whisper_tokenizer_tests)
+add_test(NAME AudioTests2 COMMAND audio_tests)
+add_test(NAME TranscribeTests COMMAND transcribe_tests)
+add_test(NAME UtilsTests COMMAND utils_tests)

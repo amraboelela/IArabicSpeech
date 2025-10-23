@@ -38,7 +38,7 @@ echo
 TESTS_PASSED=0
 TESTS_FAILED=0
 
-for test in feature_extractor_tests whisper_audio_tests whisper_tokenizer_tests; do
+for test in feature_extractor_tests whisper_audio_tests whisper_tokenizer_tests audio_tests transcribe_tests utils_tests; do
     if [ -f "./$test" ]; then
         echo
         echo "Running $test..."

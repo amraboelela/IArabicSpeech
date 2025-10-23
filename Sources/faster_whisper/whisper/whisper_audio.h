@@ -126,27 +126,4 @@ private:
 
 } // namespace whisper
 
-/**
- * Audio utility class for tests (wraps whisper::AudioProcessor)
- */
-class Audio {
-public:
-  /**
-   * Decode audio from file
-   */
-  static std::vector<float> decode_audio(const std::string& input_file, int sampling_rate = WHISPER_SAMPLE_RATE) {
-    return whisper::AudioProcessor::decode_audio(input_file, sampling_rate);
-  }
-
-  /**
-   * Pad or trim audio to specified length
-   */
-  static std::vector<float> pad_or_trim(const std::vector<float>& audio, size_t target_length) {
-    std::vector<float> result(target_length, 0.0f);
-    size_t copy_length = std::min(audio.size(), target_length);
-    std::copy(audio.begin(), audio.begin() + copy_length, result.begin());
-    return result;
-  }
-};
-
 #endif // WHISPER_AUDIO_H
