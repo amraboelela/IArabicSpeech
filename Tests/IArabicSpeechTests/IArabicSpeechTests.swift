@@ -22,7 +22,7 @@ struct IArabicSpeechTests {
         let testAudioPath = try createSyntheticWAVFile()
 
         do {
-            let audio = try ArabicSpeechRecognizer.AudioProcessor.loadAudio(from: testAudioPath)
+            let audio = try IArabicSpeechRecognizer.AudioProcessor.loadAudio(from: testAudioPath)
 
             #expect(!audio.isEmpty, "Audio should not be empty")
             #expect(audio.count > 0, "Audio should have samples")
@@ -69,7 +69,7 @@ struct IArabicSpeechTests {
         print("Generated \(audio.count) audio samples")
 
         do {
-            let melSpec = try ArabicSpeechRecognizer.AudioProcessor.extractMelSpectrogram(from: audio)
+            let melSpec = try IArabicSpeechRecognizer.AudioProcessor.extractMelSpectrogram(from: audio)
 
             #expect(!melSpec.isEmpty, "Mel spectrogram should not be empty")
             #expect(melSpec.count > 0, "Should have mel bands")
@@ -95,11 +95,11 @@ struct IArabicSpeechTests {
 
         do {
             // Step 1: Load audio
-            let audio = try ArabicSpeechRecognizer.AudioProcessor.loadAudio(from: testPath)
+            let audio = try IArabicSpeechRecognizer.AudioProcessor.loadAudio(from: testPath)
             print("✓ Step 1: Loaded \(audio.count) samples")
 
             // Step 2: Extract mel spectrogram
-            let melSpec = try ArabicSpeechRecognizer.AudioProcessor.extractMelSpectrogram(from: audio)
+            let melSpec = try IArabicSpeechRecognizer.AudioProcessor.extractMelSpectrogram(from: audio)
             print("✓ Step 2: Extracted \(melSpec.count)×\(melSpec.first?.count ?? 0) features")
 
             // Verify complete pipeline
@@ -119,13 +119,13 @@ struct IArabicSpeechTests {
     func testModelLoading() throws {
         print("\n=== Model Loading Test ===")
 
-        let recognizer = ArabicSpeechRecognizer()
+        let recognizer = IArabicSpeechRecognizer()
 
         // Test that model is not loaded initially
         #expect(!recognizer.hasModelLoaded, "Model should not be loaded initially")
 
         // Use bundled model resource
-        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+        guard let modelPath = IArabicSpeechRecognizer.bundledModelPath() else {
             throw XCTSkip("Model resource not found in bundle")
         }
 
@@ -147,10 +147,10 @@ struct IArabicSpeechTests {
     func testTranscription() async throws {
         print("\n=== Transcription Test ===")
 
-        let recognizer = ArabicSpeechRecognizer()
+        let recognizer = IArabicSpeechRecognizer()
 
         // Use bundled model resource
-        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+        guard let modelPath = IArabicSpeechRecognizer.bundledModelPath() else {
             throw XCTSkip("Model resource not found in bundle")
         }
 
@@ -187,9 +187,9 @@ struct IArabicSpeechTests {
     func testRecognizeWithLanguage() async throws {
         print("\n=== Recognize with Language Test ===")
 
-        let recognizer = ArabicSpeechRecognizer()
+        let recognizer = IArabicSpeechRecognizer()
 
-        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+        guard let modelPath = IArabicSpeechRecognizer.bundledModelPath() else {
             throw XCTSkip("Model resource not found in bundle")
         }
 
@@ -213,9 +213,9 @@ struct IArabicSpeechTests {
     func testAutoLanguageDetection() async throws {
         print("\n=== Auto Language Detection Test ===")
 
-        let recognizer = ArabicSpeechRecognizer()
+        let recognizer = IArabicSpeechRecognizer()
 
-        guard let modelPath = ArabicSpeechRecognizer.bundledModelPath() else {
+        guard let modelPath = IArabicSpeechRecognizer.bundledModelPath() else {
             throw XCTSkip("Model resource not found in bundle")
         }
 
@@ -240,7 +240,7 @@ struct IArabicSpeechTests {
         print("\n=== Invalid Audio Path Test ===")
 
         #expect(throws: SpeechRecognitionError.self) {
-            try ArabicSpeechRecognizer.AudioProcessor.loadAudio(from: "/nonexistent/file.wav")
+            try IArabicSpeechRecognizer.AudioProcessor.loadAudio(from: "/nonexistent/file.wav")
         }
         print("✓ Correctly threw error for invalid path")
     }
@@ -252,7 +252,7 @@ struct IArabicSpeechTests {
         let emptyAudio: [Float] = []
 
         #expect(throws: SpeechRecognitionError.self) {
-            try ArabicSpeechRecognizer.AudioProcessor.extractMelSpectrogram(from: emptyAudio)
+            try IArabicSpeechRecognizer.AudioProcessor.extractMelSpectrogram(from: emptyAudio)
         }
         print("✓ Correctly threw error for empty audio")
     }

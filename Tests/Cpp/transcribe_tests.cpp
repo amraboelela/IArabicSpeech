@@ -459,42 +459,32 @@ bool test_wav_file_transcription() {
     }
 
     if (!found_file) {
-        std::cout << "⚠ test.wav not found, using synthetic audio" << std::endl;
-    } else {
-        std::cout << "Found audio file: " << audio_file_path << std::endl;
+        std::cerr << "✗ Error: Could not find test.wav in any of the following paths:" << std::endl;
+        for (const auto& path : possible_paths) {
+            std::cerr << "    - " << path << std::endl;
+        }
+        throw std::runtime_error("Audio file not found: test.wav");
     }
+
+    std::cout << "Found audio file: " << audio_file_path << std::endl;
 
     try {
         std::cout << "\n1. Testing audio loading..." << std::endl;
-        std::vector<float> audio_data;
+        std::vector<float> audio_data = Audio::decode_audio(audio_file_path, 16000);
 
-        if (found_file) {
-            try {
-                audio_data = Audio::decode_audio(audio_file_path, 16000);
-                ASSERT_TRUE(!audio_data.empty(), "Audio data loaded successfully");
-                float duration = static_cast<float>(audio_data.size()) / 16000.0f;
-                std::cout << "  ✓ Loaded audio: " << audio_data.size() << " samples (" << duration << "s)" << std::endl;
-            } catch (const std::exception& e) {
-                std::cout << "  ⚠ Audio error: " << e.what() << std::endl;
-                found_file = false;
-            }
+        if (audio_data.empty()) {
+            throw std::runtime_error("Failed to load audio file (empty): test.wav");
         }
 
-        if (!found_file) {
-            std::cout << "  Creating synthetic test audio..." << std::endl;
-            audio_data.resize(5 * 16000);
-            for (size_t i = 0; i < audio_data.size(); ++i) {
-                float t = static_cast<float>(i) / 16000.0f;
-                audio_data[i] = 0.3f * std::sin(2.0f * M_PI * 440.0f * t);
-            }
-            std::cout << "  ✓ Generated synthetic audio: " << audio_data.size() << " samples" << std::endl;
-        }
+        ASSERT_TRUE(!audio_data.empty(), "Audio data loaded successfully");
+        float duration = static_cast<float>(audio_data.size()) / 16000.0f;
+        std::cout << "  ✓ Loaded audio: " << audio_data.size() << " samples (" << duration << "s)" << std::endl;
 
         std::cout << "\n✅ test.wav transcription test structure validated!" << std::endl;
 
     } catch (const std::exception& e) {
-        std::cout << "⚠ test.wav transcription test error: " << e.what() << std::endl;
-        return true;
+        std::cerr << "✗ test.wav transcription test error: " << e.what() << std::endl;
+        throw;
     }
 
     return true;
@@ -527,48 +517,32 @@ bool test_large_arabic_transcription() {
     }
 
     if (!found_file) {
-        std::cout << "⚠ 002-01.wav not found, using synthetic long Arabic audio" << std::endl;
-    } else {
-        std::cout << "Found large Arabic audio file: " << audio_file_path << std::endl;
+        std::cerr << "✗ Error: Could not find 002-01.wav in any of the following paths:" << std::endl;
+        for (const auto& path : possible_paths) {
+            std::cerr << "    - " << path << std::endl;
+        }
+        throw std::runtime_error("Audio file not found: 002-01.wav");
     }
+
+    std::cout << "Found large Arabic audio file: " << audio_file_path << std::endl;
 
     try {
         std::cout << "\n1. Testing large Arabic audio loading..." << std::endl;
-        std::vector<float> audio_data;
-        float original_duration = 0.0f;
+        std::vector<float> audio_data = Audio::decode_audio(audio_file_path, 16000);
 
-        if (found_file) {
-            try {
-                audio_data = Audio::decode_audio(audio_file_path, 16000);
-                if (audio_data.empty()) {
-                    found_file = false;
-                } else {
-                    original_duration = static_cast<float>(audio_data.size()) / 16000.0f;
-                    std::cout << "  ✓ Loaded: " << audio_data.size() << " samples ("
-                              << original_duration << "s)" << std::endl;
-                }
-            } catch (const std::exception& e) {
-                std::cout << "  ⚠ Audio error: " << e.what() << std::endl;
-                found_file = false;
-            }
+        if (audio_data.empty()) {
+            throw std::runtime_error("Failed to load audio file (empty): 002-01.wav");
         }
 
-        if (!found_file) {
-            std::cout << "  Creating synthetic 15-minute Arabic audio..." << std::endl;
-            original_duration = 900.0f;
-            audio_data.resize(static_cast<size_t>(original_duration * 16000));
-            for (size_t i = 0; i < audio_data.size(); ++i) {
-                float t = static_cast<float>(i) / 16000.0f;
-                audio_data[i] = 0.3f * std::sin(2.0f * M_PI * 200.0f * t);
-            }
-            std::cout << "  ✓ Generated synthetic audio: " << original_duration << "s" << std::endl;
-        }
+        float original_duration = static_cast<float>(audio_data.size()) / 16000.0f;
+        std::cout << "  ✓ Loaded: " << audio_data.size() << " samples ("
+                  << original_duration << "s)" << std::endl;
 
         std::cout << "\n✅ Large Arabic audio transcription test structure validated!" << std::endl;
 
     } catch (const std::exception& e) {
-        std::cout << "⚠ Large Arabic transcription test error: " << e.what() << std::endl;
-        return true;
+        std::cerr << "✗ Large Arabic transcription test error: " << e.what() << std::endl;
+        throw;
     }
 
     return true;

@@ -117,10 +117,10 @@ WhisperModelHandle whisper_create_model(const char* model_path) {
 
     try {
         // Create WhisperModel with full CTranslate2 parameters
-        auto* model = new whisper::WhisperModel(
+        auto* model = new WhisperModel(
             model_path,           // model_size_or_path
             "cpu",                // device
-            {},                   // device_index
+            {0},                  // device_index (at least one device needed)
             "float32",            // compute_type
             0,                    // cpu_threads (0 = auto)
             1,                    // num_workers
@@ -139,7 +139,7 @@ WhisperModelHandle whisper_create_model(const char* model_path) {
 
 void whisper_destroy_model(WhisperModelHandle model) {
     if (model) {
-        delete static_cast<whisper::WhisperModel*>(model);
+        delete static_cast<WhisperModel*>(model);
     }
 }
 
@@ -156,7 +156,7 @@ TranscriptionResult whisper_transcribe(
     }
 
     try {
-        auto* whisper_model = static_cast<whisper::WhisperModel*>(model);
+        auto* whisper_model = static_cast<WhisperModel*>(model);
 
         // Convert audio to std::vector
         std::vector<float> audio_vec(audio, audio + audio_length);

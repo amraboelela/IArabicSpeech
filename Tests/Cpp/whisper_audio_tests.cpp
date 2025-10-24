@@ -41,28 +41,24 @@ void test_whisper_audio(const std::string& audio_filename = "001.wav") {
   }
 
   if (!found_file) {
-    audio_file_path = possible_paths[0]; // Use first path as fallback
+    std::cerr << "✗ Error: Could not find audio file " << audio_filename << std::endl;
+    std::cerr << "  Searched paths:" << std::endl;
+    for (const auto& path : possible_paths) {
+      std::cerr << "    - " << path << std::endl;
+    }
+    throw std::runtime_error("Audio file not found: " + audio_filename);
   }
+
+  audio_file_path = found_file ? audio_file_path : possible_paths[0];
   std::vector<float> test_audio;
 
   try {
     test_audio = Audio::decode_audio(audio_file_path, WHISPER_SAMPLE_RATE);
     if (test_audio.empty()) {
-      std::cout << "⚠ Failed to load " << audio_filename << ", falling back to synthetic audio" << std::endl;
+      throw std::runtime_error("Failed to load audio file (empty): " + audio_filename);
+    }
 
-      // Fallback: Create synthetic audio if file loading fails
-      const int duration_seconds = 2;
-      const int sample_rate = WHISPER_SAMPLE_RATE;
-      const int num_samples = duration_seconds * sample_rate;
-
-      test_audio.resize(num_samples);
-      for (int i = 0; i < num_samples; ++i) {
-        // Generate a simple sine wave at 440 Hz
-        float t = static_cast<float>(i) / sample_rate;
-        test_audio[i] = 0.5f * std::sin(2.0f * M_PI * 440.0f * t);
-      }
-      std::cout << "✓ Generated synthetic audio as fallback (" << test_audio.size() << " samples)" << std::endl;
-    } else {
+    {
       // Store original size before potential trimming
       size_t original_size = test_audio.size();
       float original_duration = original_size / float(WHISPER_SAMPLE_RATE);
@@ -79,20 +75,8 @@ void test_whisper_audio(const std::string& audio_filename = "001.wav") {
       }
     }
   } catch (const std::exception& e) {
-    std::cout << "⚠ Error loading " << audio_filename << ": " << e.what() << std::endl;
-    std::cout << "Falling back to synthetic audio..." << std::endl;
-
-    // Fallback: Create synthetic audio
-    const int duration_seconds = 2;
-    const int sample_rate = WHISPER_SAMPLE_RATE;
-    const int num_samples = duration_seconds * sample_rate;
-
-    test_audio.resize(num_samples);
-    for (int i = 0; i < num_samples; ++i) {
-      float t = static_cast<float>(i) / sample_rate;
-      test_audio[i] = 0.5f * std::sin(2.0f * M_PI * 440.0f * t);
-    }
-    std::cout << "✓ Generated synthetic audio as fallback" << std::endl;
+    std::cerr << "✗ Error loading " << audio_filename << ": " << e.what() << std::endl;
+    throw;
   }
 
   // Test 2: Test audio preprocessing functions
@@ -243,8 +227,15 @@ void test_long_audio_integration(const std::string& audio_filename = "002-01.wav
   }
 
   if (!found_file) {
-    audio_file_path = possible_paths[0]; // Use first path as fallback
+    std::cerr << "✗ Error: Could not find audio file " << audio_filename << std::endl;
+    std::cerr << "  Searched paths:" << std::endl;
+    for (const auto& path : possible_paths) {
+      std::cerr << "    - " << path << std::endl;
+    }
+    throw std::runtime_error("Audio file not found: " + audio_filename);
   }
+
+  audio_file_path = found_file ? audio_file_path : possible_paths[0];
 
   // Test 1: Load and analyze large audio file
   std::cout << "\n1. Loading and analyzing large audio file..." << std::endl;
@@ -256,19 +247,10 @@ void test_long_audio_integration(const std::string& audio_filename = "002-01.wav
     long_audio = Audio::decode_audio(audio_file_path, WHISPER_SAMPLE_RATE);
 
     if (long_audio.empty()) {
-      // Fallback: Create synthetic 15-minute audio (900 seconds)
-      std::cout << "⚠ Failed to load file, creating synthetic 15-minute audio" << std::endl;
-      long_audio.resize(900 * WHISPER_SAMPLE_RATE);
+      throw std::runtime_error("Failed to load audio file (empty): " + audio_filename);
+    }
 
-      for (size_t i = 0; i < long_audio.size(); ++i) {
-        float t = static_cast<float>(i) / WHISPER_SAMPLE_RATE;
-        // Complex synthetic audio with multiple frequencies
-        long_audio[i] = 0.3f * std::sin(2.0f * M_PI * 440.0f * t) +
-                       0.2f * std::sin(2.0f * M_PI * 880.0f * t) +
-                       0.1f * std::sin(2.0f * M_PI * 220.0f * t);
-      }
-      original_duration = 900.0f;
-    } else {
+    {
       original_duration = long_audio.size() / float(WHISPER_SAMPLE_RATE);
     }
 
@@ -281,33 +263,12 @@ void test_long_audio_integration(const std::string& audio_filename = "002-01.wav
     if (original_duration >= 60.0f) {
       std::cout << "✓ Confirmed long audio (>= 60 seconds)" << std::endl;
     } else {
-      std::cout << "ℹ️  Audio shorter than 60s, extending for test..." << std::endl;
-
-      // Extend audio to 60+ seconds for testing
-      size_t target_samples = 65 * WHISPER_SAMPLE_RATE; // 65 seconds
-      long_audio.resize(target_samples);
-
-      // Fill extended portion with repeated pattern
-      for (size_t i = long_audio.size() / 2; i < long_audio.size(); ++i) {
-        long_audio[i] = long_audio[i % (long_audio.size() / 2)];
-      }
-
-      original_duration = 65.0f;
-      std::cout << "  - Extended to 65 seconds for testing" << std::endl;
+      std::cout << "⚠ Warning: Audio shorter than 60s (" << original_duration << "s)" << std::endl;
     }
 
   } catch (const std::exception& e) {
-    std::cout << "⚠ Error loading file: " << e.what() << std::endl;
-    std::cout << "Creating synthetic 15-minute audio for testing..." << std::endl;
-
-    // Create comprehensive synthetic audio
-    long_audio.resize(900 * WHISPER_SAMPLE_RATE);
-    for (size_t i = 0; i < long_audio.size(); ++i) {
-      float t = static_cast<float>(i) / WHISPER_SAMPLE_RATE;
-      long_audio[i] = 0.2f * std::sin(2.0f * M_PI * 440.0f * t) +
-                     0.1f * std::sin(2.0f * M_PI * 880.0f * t);
-    }
-    original_duration = 900.0f;
+    std::cerr << "✗ Error loading file: " << e.what() << std::endl;
+    throw;
   }
 
   // Test 2: Audio preprocessing pipeline for long audio
@@ -726,7 +687,6 @@ void test_audio_size_performance() {
 
 int main() {
   // Test standard audio files first
-  test_whisper_audio("test.wav");
   test_whisper_audio("001.wav");
   test_whisper_audio("002-01.wav");
 

@@ -422,56 +422,51 @@ namespace {
     // Test 1: Medium audio file (001.wav ~43 seconds)
     std::cout << "\nTesting medium audio file chunking (001.wav)..." << std::endl;
 
-    if (found_assets) {
-      std::cout << "Loading 001.wav from: " << assets_path << std::endl;
-
-      // Test default 30s chunking
-      auto features_30s = extractor.compute_mel_spectrogram(
-          std::vector<float>(43 * 16000, 0.1f), // Mock 43s audio
-          160, // padding
-          30   // 30s chunks
-      );
-
-      ASSERT_TRUE(!features_30s.empty(), "Medium audio features not empty");
-      ASSERT_EQ(features_30s.size(), 80, "Medium audio has 80 mel bins");
-
-      // Should process first 30 seconds only
-      int expected_frames_30s = 30 * 16000 / 160; // 3000 frames
-      if (!features_30s.empty()) {
-        ASSERT_APPROX_EQ(static_cast<int>(features_30s[0].size()), expected_frames_30s, 50,
-                         "30s chunk frame count");
+    if (!found_assets) {
+      std::cerr << "✗ Error: Could not find 001.wav in any of the following paths:" << std::endl;
+      for (const auto& path : possible_paths) {
+        std::cerr << "    - " << path << "001.wav" << std::endl;
       }
+      throw std::runtime_error("Audio file not found: 001.wav");
+    }
 
-      // Test full audio processing (no chunking)
-      auto features_full = extractor.compute_mel_spectrogram(
-          std::vector<float>(43 * 16000, 0.1f), // Mock 43s audio
-          160,         // padding
-          std::nullopt // no chunking
-      );
+    std::cout << "Loading 001.wav from: " << assets_path << std::endl;
 
-      ASSERT_TRUE(!features_full.empty(), "Full medium audio features not empty");
-      int expected_frames_full = 43 * 16000 / 160; // ~4300 frames
-      if (!features_full.empty()) {
-        ASSERT_APPROX_EQ(static_cast<int>(features_full[0].size()), expected_frames_full, 50,
-                         "Full medium audio frame count");
-      }
+    // Test default 30s chunking
+    auto features_30s = extractor.compute_mel_spectrogram(
+        std::vector<float>(43 * 16000, 0.1f), // Mock 43s audio
+        160, // padding
+        30   // 30s chunks
+    );
 
-      // Test that full audio has more frames than 30s chunk
-      if (!features_30s.empty() && !features_full.empty()) {
-        ASSERT_TRUE(features_full[0].size() > features_30s[0].size(),
-                    "Full audio has more frames than 30s chunk");
-      }
-    } else {
-      std::cout << "⚠ Audio files not found, using mock data" << std::endl;
+    ASSERT_TRUE(!features_30s.empty(), "Medium audio features not empty");
+    ASSERT_EQ(features_30s.size(), 80, "Medium audio has 80 mel bins");
 
-      // Mock test with synthetic data
-      std::vector<float> mock_43s_audio(43 * 16000);
-      for (size_t i = 0; i < mock_43s_audio.size(); ++i) {
-        mock_43s_audio[i] = 0.1f * std::sin(2.0f * M_PI * 440.0f * i / 16000.0f);
-      }
+    // Should process first 30 seconds only
+    int expected_frames_30s = 30 * 16000 / 160; // 3000 frames
+    if (!features_30s.empty()) {
+      ASSERT_APPROX_EQ(static_cast<int>(features_30s[0].size()), expected_frames_30s, 50,
+                       "30s chunk frame count");
+    }
 
-      auto features = extractor.compute_mel_spectrogram(mock_43s_audio, 160, 30);
-      ASSERT_TRUE(!features.empty(), "Mock medium audio features not empty");
+    // Test full audio processing (no chunking)
+    auto features_full = extractor.compute_mel_spectrogram(
+        std::vector<float>(43 * 16000, 0.1f), // Mock 43s audio
+        160,         // padding
+        std::nullopt // no chunking
+    );
+
+    ASSERT_TRUE(!features_full.empty(), "Full medium audio features not empty");
+    int expected_frames_full = 43 * 16000 / 160; // ~4300 frames
+    if (!features_full.empty()) {
+      ASSERT_APPROX_EQ(static_cast<int>(features_full[0].size()), expected_frames_full, 50,
+                       "Full medium audio frame count");
+    }
+
+    // Test that full audio has more frames than 30s chunk
+    if (!features_30s.empty() && !features_full.empty()) {
+      ASSERT_TRUE(features_full[0].size() > features_30s[0].size(),
+                  "Full audio has more frames than 30s chunk");
     }
 
     // Test 2: Long audio file (002-01.wav ~900 seconds / 15 minutes)

@@ -1,5 +1,5 @@
 ///
-/// IArabicSpeech.swift
+/// IArabicSpeechRecognizer.swift
 /// Arabic speech recognizer based on Faster Whisper
 ///
 /// Created by Amr Aboelela on 10/21/2025.
@@ -8,10 +8,10 @@
 import Foundation
 
 // Import C functions from faster_whisper module
-@_exported import faster_whisper
+import faster_whisper
 
 /// Main speech recognizer class for Arabic language
-public class ArabicSpeechRecognizer {
+public class IArabicSpeechRecognizer {
 
     private var modelHandle: WhisperModelHandle?
     private var isModelLoaded = false
@@ -95,33 +95,61 @@ public class ArabicSpeechRecognizer {
     /// - Returns: Path to the whisper_ct2 model directory, or nil if not found
     public static func bundledModelPath() -> String? {
         // The model is bundled with the faster_whisper module inside model/whisper_ct2
-        // Try to locate it in the build/test bundle structure
+        // We need to find the faster_whisper resource bundle
 
-        // Get the path to the current executable/test bundle
-        let currentBundle = Bundle.main
-        let bundleURL = currentBundle.bundleURL
+        // Try to get all loaded bundles - SPM creates resource bundles for targets with resources
+        let allBundles = Bundle.allBundles
+        print("Total bundles loaded: \(allBundles.count)")
 
-        // Common locations where SPM places module resources
-        let possibleLocations = [
-            // Direct in bundle
-            bundleURL.appendingPathComponent("model/whisper_ct2"),
-            // In Resources subdirectory
-            bundleURL.appendingPathComponent("Contents/Resources/model/whisper_ct2"),
-            bundleURL.appendingPathComponent("Resources/model/whisper_ct2"),
-            // In module-specific bundle (SPM creates these for resources)
-            bundleURL.deletingLastPathComponent().appendingPathComponent("faster_whisper_faster_whisper.bundle/Contents/Resources/model/whisper_ct2"),
-            bundleURL.deletingLastPathComponent().appendingPathComponent("faster_whisper.bundle/Contents/Resources/model/whisper_ct2"),
-            // Build directory structure
-            bundleURL.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("faster_whisper_faster_whisper.bundle/Contents/Resources/model/whisper_ct2"),
-        ]
-
-        for location in possibleLocations {
-            let path = location.path
-            if FileManager.default.fileExists(atPath: path) {
-                return path
+        // Find the test bundle (contains .xctest)
+        var testBundlePath: String?
+        for bundle in allBundles {
+            let bundlePath = bundle.bundlePath
+            if bundlePath.hasSuffix(".xctest") {
+                testBundlePath = bundlePath
+                print("Found test bundle: \(bundlePath)")
+                break
             }
         }
 
+        guard let testBundle = testBundlePath else {
+            print("Could not find test bundle")
+            return nil
+        }
+
+        // The faster_whisper bundle should be in the same directory as the test bundle
+        let testBundleURL = URL(fileURLWithPath: testBundle)
+        let buildProductsDir = testBundleURL.deletingLastPathComponent()
+
+        print("Build products directory: \(buildProductsDir.path)")
+
+        // Look for faster_whisper bundle in the build products directory
+        let fileManager = FileManager.default
+        if let contents = try? fileManager.contentsOfDirectory(at: buildProductsDir, includingPropertiesForKeys: [.isDirectoryKey]) {
+            for item in contents {
+                print("Found in build products: \(item.lastPathComponent)")
+
+                if item.lastPathComponent.contains("faster_whisper") && item.pathExtension == "bundle" {
+                    print("Found faster_whisper bundle: \(item.path)")
+
+                    // Try different paths within the bundle
+                    let modelPaths = [
+                        item.appendingPathComponent("Contents/Resources/model/whisper_ct2"),
+                        item.appendingPathComponent("model/whisper_ct2"),
+                    ]
+
+                    for modelPath in modelPaths {
+                        print("  Checking: \(modelPath.path)")
+                        if fileManager.fileExists(atPath: modelPath.path) {
+                            print("  ✓ Found model at: \(modelPath.path)")
+                            return modelPath.path
+                        }
+                    }
+                }
+            }
+        }
+
+        print("✗ Model not found in any expected location")
         return nil
     }
 
