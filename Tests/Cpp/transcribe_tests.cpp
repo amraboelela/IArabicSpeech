@@ -374,29 +374,12 @@ bool test_alfatiha_transcription() {
         "ولا الضالين"
     };
 
-    // Test different audio file paths
-    std::vector<std::string> possible_paths = {
-        "../../../src/main/assets/001.wav",
-        "../../../main/assets/001.wav",
-        "../../assets/001.wav",
-        "../assets/001.wav",
-        "assets/001.wav"
-    };
+    // Audio file path relative to build directory
+    std::string audio_file_path = "../assets/001.wav";
 
-    std::string audio_file_path;
-    bool found_file = false;
-
-    for (const auto& path : possible_paths) {
-        std::ifstream test_file(path);
-        if (test_file.good()) {
-            audio_file_path = path;
-            found_file = true;
-            break;
-        }
-    }
-
-    if (!found_file) {
-        std::cout << "⚠ 001.wav not found, skipping transcription test" << std::endl;
+    std::ifstream test_file(audio_file_path);
+    if (!test_file.good()) {
+        std::cout << "⚠ 001.wav not found at " << audio_file_path << ", skipping transcription test" << std::endl;
         return true;
     }
 
@@ -433,37 +416,18 @@ bool test_alfatiha_transcription() {
 }
 
 /**
- * Test transcribe() with test.wav audio file
+ * Test transcribe() with 001.wav audio file
  */
 bool test_wav_file_transcription() {
-    std::cout << "\n=== Testing test.wav Transcription ===" << std::endl;
+    std::cout << "\n=== Testing 001.wav Transcription ===" << std::endl;
 
-    std::vector<std::string> possible_paths = {
-        "../../../src/main/assets/test.wav",
-        "../../../main/assets/test.wav",
-        "../../assets/test.wav",
-        "../assets/test.wav",
-        "assets/test.wav"
-    };
+    // Audio file path relative to build directory
+    std::string audio_file_path = "../assets/001.wav";
 
-    std::string audio_file_path;
-    bool found_file = false;
-
-    for (const auto& path : possible_paths) {
-        std::ifstream test_file(path);
-        if (test_file.good()) {
-            audio_file_path = path;
-            found_file = true;
-            break;
-        }
-    }
-
-    if (!found_file) {
-        std::cerr << "✗ Error: Could not find test.wav in any of the following paths:" << std::endl;
-        for (const auto& path : possible_paths) {
-            std::cerr << "    - " << path << std::endl;
-        }
-        throw std::runtime_error("Audio file not found: test.wav");
+    std::ifstream test_file(audio_file_path);
+    if (!test_file.good()) {
+        std::cerr << "✗ Error: Could not find 001.wav at: " << audio_file_path << std::endl;
+        throw std::runtime_error("Audio file not found: 001.wav");
     }
 
     std::cout << "Found audio file: " << audio_file_path << std::endl;
@@ -473,17 +437,17 @@ bool test_wav_file_transcription() {
         std::vector<float> audio_data = Audio::decode_audio(audio_file_path, 16000);
 
         if (audio_data.empty()) {
-            throw std::runtime_error("Failed to load audio file (empty): test.wav");
+            throw std::runtime_error("Failed to load audio file (empty): 001.wav");
         }
 
         ASSERT_TRUE(!audio_data.empty(), "Audio data loaded successfully");
         float duration = static_cast<float>(audio_data.size()) / 16000.0f;
         std::cout << "  ✓ Loaded audio: " << audio_data.size() << " samples (" << duration << "s)" << std::endl;
 
-        std::cout << "\n✅ test.wav transcription test structure validated!" << std::endl;
+        std::cout << "\n✅ 001.wav transcription test structure validated!" << std::endl;
 
     } catch (const std::exception& e) {
-        std::cerr << "✗ test.wav transcription test error: " << e.what() << std::endl;
+        std::cerr << "✗ 001.wav transcription test error: " << e.what() << std::endl;
         throw;
     }
 
@@ -496,31 +460,12 @@ bool test_wav_file_transcription() {
 bool test_large_arabic_transcription() {
     std::cout << "\n=== Testing Large Arabic Audio Transcription (002-01.wav) ===" << std::endl;
 
-    std::vector<std::string> possible_paths = {
-        "../../../src/main/assets/002-01.wav",
-        "../../../main/assets/002-01.wav",
-        "../../assets/002-01.wav",
-        "../assets/002-01.wav",
-        "assets/002-01.wav"
-    };
+    // Audio file path relative to build directory
+    std::string audio_file_path = "../assets/002-01.wav";
 
-    std::string audio_file_path;
-    bool found_file = false;
-
-    for (const auto& path : possible_paths) {
-        std::ifstream test_file(path);
-        if (test_file.good()) {
-            audio_file_path = path;
-            found_file = true;
-            break;
-        }
-    }
-
-    if (!found_file) {
-        std::cerr << "✗ Error: Could not find 002-01.wav in any of the following paths:" << std::endl;
-        for (const auto& path : possible_paths) {
-            std::cerr << "    - " << path << std::endl;
-        }
+    std::ifstream test_file(audio_file_path);
+    if (!test_file.good()) {
+        std::cerr << "✗ Error: Could not find 002-01.wav at: " << audio_file_path << std::endl;
         throw std::runtime_error("Audio file not found: 002-01.wav");
     }
 
