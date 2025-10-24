@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Include directories
 include_directories(../../../Sources/faster_whisper/include)
+include_directories(../../../Sources/faster_whisper/headers)
 include_directories(../../../Sources/faster_whisper/whisper)
 
 # Find required packages

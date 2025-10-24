@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CTRANSLATE2_ROOT "/Users/amraboelela/develop/android/CTranslate2")
 include_directories(${CTRANSLATE2_ROOT}/include)
 include_directories(../../../Sources/faster_whisper/include)
+include_directories(../../../Sources/faster_whisper/headers)
 include_directories(../../../Sources/faster_whisper/whisper)
 
 # Find required packages
