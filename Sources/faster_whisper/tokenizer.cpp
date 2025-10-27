@@ -69,6 +69,9 @@ Tokenizer::Tokenizer(
   std::optional<std::string> language,
   std::optional<std::string> vocab_path
 ) : _tokenizer(tokenizer), _multilingual(multilingual) {
+  // Mark unused private fields
+  (void)_tokenizer;
+  (void)_multilingual;
 
   // __android_log_print(ANDROID_LOG_DEBUG, "#transcribe", "Tokenizer constructor called");
   // __android_log_print(ANDROID_LOG_DEBUG, "#transcribe", "Parameters - multilingual: %d, task: %s, language: %s, vocab_path: %s",
@@ -116,6 +119,9 @@ Tokenizer::Tokenizer(
   std::optional<std::string> task,
   std::optional<std::string> language
 ) : _tokenizer(nullptr), _multilingual(multilingual) {
+  // Mark unused private fields
+  (void)_tokenizer;
+  (void)_multilingual;
 
   // __android_log_print(ANDROID_LOG_DEBUG, "#transcribe", "Tokenizer constructor (CTranslate2) called");
   // __android_log_print(ANDROID_LOG_DEBUG, "#transcribe", "Parameters - multilingual: %d, task: %s, language: %s",

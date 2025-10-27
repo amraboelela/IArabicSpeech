@@ -2,30 +2,10 @@
 
 # Script to build and run whisper audio integration test
 
-set -e  # Exit on any error
+# Source common test setup and cleanup
+source "$(dirname "$0")/test_setup.sh"
 
-# Cleanup function that runs on exit (success or failure)
-cleanup() {
-    echo "Cleaning up build directory..."
-    if [ -d "build" ]; then
-        rm -rf build
-        echo "✅ build directory removed"
-    fi
-}
-
-# Set trap to run cleanup on script exit
-trap cleanup EXIT
 echo "=== Building and Running Whisper Audio Integration Test ==="
-
-# Navigate to cpp directory
-cd "$(dirname "$0")"
-
-# Create build directory
-if [ ! -d "build" ]; then
-    mkdir build
-fi
-
-cd build
 
 echo "Configuring build with CMake..."
 # Copy the test CMakeLists to be the main one for this build
@@ -46,7 +26,3 @@ echo "Test execution completed!"
 echo ""
 echo "Running with CTest for detailed results..."
 make test
-
-cd ..
-
-echo "Done!"

@@ -59,10 +59,10 @@ std::vector<std::string> availableModels() {
 std::string downloadModel(
     const std::string& sizeOrId,
     const std::optional<std::string>& outputDir = std::nullopt,
-    bool localFilesOnly = false,
-    const std::optional<std::string>& cacheDir = std::nullopt,
-    const std::optional<std::string>& revision = std::nullopt,
-    const std::optional<std::string>& useAuthToken = std::nullopt) {
+    bool /*localFilesOnly*/ = false,
+    const std::optional<std::string>& /*cacheDir*/ = std::nullopt,
+    const std::optional<std::string>& /*revision*/ = std::nullopt,
+    const std::optional<std::string>& /*useAuthToken*/ = std::nullopt) {
 
   std::string repoId;
   if (sizeOrId.find('/') != std::string::npos) {
@@ -151,13 +151,13 @@ std::optional<double> get_end(const std::vector<std::unordered_map<std::string, 
 }
 
 // Simple JSON parsing functions (stub implementations)
-std::map<std::string, std::string> parse_json(const std::string& json_string) {
+std::map<std::string, std::string> parse_json(const std::string& /*json_string*/) {
   // Stub implementation - returns empty map
   // In a real implementation, you would parse the JSON string
   return std::map<std::string, std::string>();
 }
 
-std::map<std::string, std::string> parse_json_file(const std::string& file_path) {
+std::map<std::string, std::string> parse_json_file(const std::string& /*file_path*/) {
   // Stub implementation - returns empty map
   // In a real implementation, you would read and parse the JSON file
   return std::map<std::string, std::string>();

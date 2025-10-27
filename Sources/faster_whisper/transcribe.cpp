@@ -1174,7 +1174,7 @@ WhisperModel::generate_with_fallback(
       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
       std::ostringstream duration_msg;
       //duration_msg << "result.get() completed in " << duration.count() << "ms";
-      logTranscribeTimestamp(duration_msg.str());
+      //logTranscribeTimestamp(duration_msg.str());
 
       // __android_log_print(ANDROID_LOG_DEBUG, "#transcribe", "Result sequences count: %zu", result.sequences_ids.size());
       // if (!result.sequences_ids.empty()) {

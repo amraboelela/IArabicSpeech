@@ -559,7 +559,7 @@ static const std::unordered_map<wchar_t, uint8_t> unicode_to_bytes_map = create_
   }
 
   std::vector<int>
-  WhisperTokenizer::encode(const std::string &text, bool add_special_tokens) const {
+  WhisperTokenizer::encode(const std::string &text, bool /*add_special_tokens*/) const {
     if (text.empty()) {
       return {};
     }
@@ -991,6 +991,7 @@ static const std::unordered_map<wchar_t, uint8_t> unicode_to_bytes_map = create_
     // Test basic token retrieval
     try {
       int sot = tokenizer_->get_sot_token();
+      (void)sot;  // Unused but verifies tokenizer is working
       // __android_log_print(ANDROID_LOG_DEBUG, "#transcribe",
       //                     "TokenizerWrapper - SOT token from WhisperTokenizer: %d", sot);
     } catch (const std::exception &e) {
@@ -1016,7 +1017,7 @@ static const std::unordered_map<wchar_t, uint8_t> unicode_to_bytes_map = create_
 
     // Test basic token retrieval
     try {
-      int sot = tokenizer_->get_sot_token();
+      (void)tokenizer_->get_sot_token();  // Unused but verifies tokenizer is working
       // __android_log_print(ANDROID_LOG_DEBUG, "#transcribe",
       //                     "TokenizerWrapper - SOT token from WhisperTokenizer: %d", sot);
     } catch (const std::exception &e) {

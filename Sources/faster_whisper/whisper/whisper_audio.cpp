@@ -61,7 +61,7 @@ std::vector<float> AudioProcessor::decode_audio(const std::string& input_file, i
   }
 
   // Resample if needed
-  if (header.sample_rate != sampling_rate) {
+  if (header.sample_rate != static_cast<uint32_t>(sampling_rate)) {
       audio = resample_audio(audio, header.sample_rate);
   }
 
@@ -192,6 +192,8 @@ std::vector<std::vector<float>> AudioProcessor::extract_mel_spectrogram(const st
   // stft is now [freq_bins][time_frames]
   size_t n_freq_bins = stft.size();
   size_t n_frames = stft.empty() ? 0 : stft[0].size();
+  (void)n_freq_bins;  // Unused but kept for debugging
+  (void)n_frames;
   //   std::cout << "  STFT magnitudes shape: (" << n_freq_bins << ", " << n_frames << ")" << std::endl;
 
   // Calculate and log STFT magnitudes statistics
@@ -208,6 +210,9 @@ std::vector<std::vector<float>> AudioProcessor::extract_mel_spectrogram(const st
     }
   }
   float stft_mean = stft_sum / stft_count;
+  (void)stft_min;  // Unused but calculated for debugging
+  (void)stft_max;
+  (void)stft_mean;
   //   std::cout << "  STFT magnitudes stats: min=" << std::fixed << std::setprecision(6) << stft_min << ", max=" << stft_max << ", mean=" << stft_mean << std::endl;
 
   // Print first 5 magnitude values from first frequency bin (same as Python)
@@ -236,6 +241,9 @@ std::vector<std::vector<float>> AudioProcessor::extract_mel_spectrogram(const st
     }
   }
   float mel_filter_mean = mel_filter_sum / mel_filter_count;
+  (void)mel_filter_min;  // Unused but calculated for debugging
+  (void)mel_filter_max;
+  (void)mel_filter_mean;
   //   std::cout << "  Mel filter stats: min=" << std::setprecision(6) << mel_filter_min << ", max=" << mel_filter_max << ", mean=" << mel_filter_mean << std::endl;
 
   // Apply mel filters to STFT magnitude
@@ -272,6 +280,9 @@ std::vector<std::vector<float>> AudioProcessor::extract_mel_spectrogram(const st
     }
   }
   float mel_mean = mel_sum / mel_count;
+  (void)mel_min;  // Unused but calculated for debugging
+  (void)mel_max;
+  (void)mel_mean;
   //   std::cout << "  Raw mel spec stats: min=" << std::setprecision(6) << mel_min << ", max=" << mel_max << ", mean=" << mel_mean << std::endl;
 
   // Print first 5 mel values from first mel band
@@ -309,6 +320,9 @@ std::vector<std::vector<float>> AudioProcessor::apply_log_transform(const std::v
     }
   }
   float log_mean = log_sum / log_count;
+  (void)log_min;  // Unused but calculated for debugging
+  (void)log_max;
+  (void)log_mean;  // Unused but calculated for debugging
   //   std::cout << "  After log10 stats: min=" << std::fixed << std::setprecision(6) << log_min << ", max=" << log_max << ", mean=" << log_mean << std::endl;
 
   return log_mel_spec;
@@ -342,7 +356,7 @@ std::vector<std::vector<float>> AudioProcessor::compute_stft(const std::vector<f
       int start_idx = frame * hop_size;
 
       // Extract and window the frame (reuse frame_data buffer)
-      for (int n = 0; n < window_size && start_idx + n < padded_audio.size(); ++n) {
+      for (int n = 0; n < window_size && start_idx + n < static_cast<int>(padded_audio.size()); ++n) {
           frame_data[n] = padded_audio[start_idx + n] * window[n];
       }
       // Zero out any remaining space (if start_idx + n >= padded_audio.size())
@@ -368,38 +382,38 @@ std::vector<std::vector<float>> AudioProcessor::compute_stft(const std::vector<f
       auto fft_result = FFT::rfft(frame_data);
 
       // Debug: log first FFT result for first non-zero frame
-      static bool logged_fft = false;
-      if (!logged_fft && frame == 100) {  // Check frame 100 to avoid all-zero frames
-        logAudioTimestamp("DEBUG FFT frame 100: First 5 complex values");
-        std::cout << "  DEBUG FFT frame 100: First 5 complex values: [";
-        for (size_t i = 0; i < std::min(size_t(5), fft_result.size()); ++i) {
-          // Add proper spacing between complex numbers
-          if (i > 0) std::cout << " ";
-          // Add line break after 3rd value to match Python's display
-          if (i == 3) std::cout << "\n ";
-
-          // Format complex numbers to match Python's output
-          float real_part = fft_result[i].real();
-          float imag_part = fft_result[i].imag();
-
-          // Format real part with appropriate width and precision
-          std::cout << std::setw(12) << std::fixed << std::setprecision(8) << real_part;
-
-          // Format imaginary part
-          if (std::abs(imag_part) < 1e-9f) {
-            // For zero imaginary part, use "0.j" format like Python
-            std::cout << "+0.j";
-          } else {
-            // For non-zero imaginary part, add sign and value
-            if (imag_part >= 0) {
-              std::cout << "+";
-            }
-            std::cout << std::setprecision(8) << imag_part << "j";
-          }
-        }
-        std::cout << "]" << std::endl;
-        logged_fft = true;
-      }
+      //static bool logged_fft = false;
+      //if (!logged_fft && frame == 100) {  // Check frame 100 to avoid all-zero frames
+      //  logAudioTimestamp("DEBUG FFT frame 100: First 5 complex values");
+      //  std::cout << "  DEBUG FFT frame 100: First 5 complex values: [";
+      //  for (size_t i = 0; i < std::min(size_t(5), fft_result.size()); ++i) {
+      //    // Add proper spacing between complex numbers
+      //    if (i > 0) std::cout << " ";
+      //    // Add line break after 3rd value to match Python's display
+      //    if (i == 3) std::cout << "\n ";
+      //
+      //    // Format complex numbers to match Python's output
+      //    float real_part = fft_result[i].real();
+      //    float imag_part = fft_result[i].imag();
+      //
+      //    // Format real part with appropriate width and precision
+      //    std::cout << std::setw(12) << std::fixed << std::setprecision(8) << real_part;
+      //
+      //    // Format imaginary part
+      //    if (std::abs(imag_part) < 1e-9f) {
+      //      // For zero imaginary part, use "0.j" format like Python
+      //      std::cout << "+0.j";
+      //    } else {
+      //      // For non-zero imaginary part, add sign and value
+      //      if (imag_part >= 0) {
+      //        std::cout << "+";
+      //      }
+      //      std::cout << std::setprecision(8) << imag_part << "j";
+      //    }
+      //  }
+      //  std::cout << "]" << std::endl;
+      //  logged_fft = true;
+      //}
 
       // Compute magnitude squared and store directly in transposed format
       for (size_t i = 0; i < fft_result.size(); ++i) {

@@ -169,9 +169,9 @@ std::vector<std::vector<std::complex<float>>> FeatureExtractor::stft(
     const std::vector<float>& input_array,
     int n_fft,
     int hop_length,
-    int win_length,
+    int /*win_length*/,
     const std::vector<float>& window,
-    bool center
+    bool /*center*/
 ) {
   // Simplified STFT implementation
   // For production, use a proper FFT library like FFTW or Kiss FFT
@@ -226,7 +226,7 @@ Matrix FeatureExtractor::compute_mel_spectrogram(
     int padding,
     std::optional<int> chunk_length
 ) {
-  logFeatureTimestamp("Starting feature extraction");
+  //logFeatureTimestamp("Starting feature extraction");
   // logFeatureTimestamp("DEBUG: feature_extractor.__call__ called");
   // std::cout << "  Input waveform shape: (" << waveform.size() << ",)" << std::endl;
   // std::cout << "  Padding: " << padding << std::endl;
@@ -339,6 +339,9 @@ Matrix FeatureExtractor::compute_mel_spectrogram(
     }
   }
   float clamp_mean = clamp_sum / clamp_count;
+  (void)clamp_min;  // Unused but calculated for debugging
+  (void)clamp_max;
+  (void)clamp_mean;
   // std::cout << "  After clamping stats: min=" << std::fixed << std::setprecision(6) << clamp_min << ", max=" << clamp_max << ", mean=" << clamp_mean << std::endl;
 
   // Apply final scaling
@@ -368,7 +371,7 @@ Matrix FeatureExtractor::compute_mel_spectrogram(
   // float final_mean = final_sum / final_count;
   // std::cout << "  Final log_spec stats: min=" << final_min << ", max=" << final_max << ", mean=" << final_mean << std::endl;
 
-  logFeatureTimestamp("Feature extraction completed");
+  //logFeatureTimestamp("Feature extraction completed");
   return log_mel_spec;
 }
 
@@ -393,7 +396,7 @@ Matrix FeatureExtractor::compute_mel_spectrogram_original(
     window[i] = 0.5f * (1.0f - cos(2.0f * M_PI * i / (n_fft - 1)));
   }
 
-  logFeatureTimestamp("Starting STFT computation");
+  //logFeatureTimestamp("Starting STFT computation");
   auto stft_output = stft(
       processed_waveform,
       n_fft,
@@ -415,7 +418,7 @@ Matrix FeatureExtractor::compute_mel_spectrogram_original(
     }
   }
 
-  logFeatureTimestamp("STFT completed, starting mel filtering");
+  //logFeatureTimestamp("STFT completed, starting mel filtering");
   // Perform matrix multiplication: mel_filters @ magnitudes
   Matrix mel_spec(mel_filters.size(), std::vector<float>(magnitudes.size()));
   for (size_t i = 0; i < mel_filters.size(); ++i) {

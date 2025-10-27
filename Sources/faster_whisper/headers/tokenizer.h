@@ -74,8 +74,8 @@ public:
   split_to_word_tokens(const std::vector<int>& tokens);
 
 private:
-  tokenizers::Tokenizer* _tokenizer;
-  bool _multilingual;
+  tokenizers::Tokenizer* _tokenizer;  // Unused - kept for potential future use
+  bool _multilingual;  // Unused - kept for potential future use
   std::optional<int> _task;
   std::optional<int> _language;
   std::string _language_code;

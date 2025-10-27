@@ -1,29 +1,24 @@
 #!/bin/bash
 
-# Script to build and run audio processing unit tests
-# Usage: ./audio_tests.sh
+# Script to build and run Whisper integration tests
+# Usage: ./test_whisper.sh
 
 # Source common test setup and cleanup
 source "$(dirname "$0")/test_setup.sh"
 
-echo "=== Building and Running Audio Processing Unit Tests ==="
+echo "=== Building and Running Whisper Integration Tests ==="
 
 echo "Configuring build with CMake..."
 # Copy the test CMakeLists to be the main one for this build
-cp ../cmak_lists/audio_tests.cmak ./CMakeLists.txt
+cp ../cmak_lists/test_whisper.cmake ./CMakeLists.txt
 cmake -DCMAKE_BUILD_TYPE=Release .
 
 echo "Building test executable..."
 make
 
-echo "Running audio processing tests..."
+echo "Running whisper integration tests..."
 echo "================================"
-./test_audio
+./bin/test_whisper
 
 echo "================================"
 echo "Test execution completed!"
-
-# Optional: Run with CTest for more detailed output
-echo ""
-echo "Running with CTest for detailed results..."
-make test
